@@ -31,13 +31,15 @@ INCLUDEPATH += $$PWD   # 将自身加入include路径
 HEADERS = \
     camera.h \
     imagesettings.h \
-    videosettings.h
+    videosettings.h \
+    videocliper.h
 
 SOURCES = \
     main.cpp \
     camera.cpp \
     imagesettings.cpp \
-    videosettings.cpp
+    videosettings.cpp \
+    videocliper.cpp
 
 FORMS += \
     camera.ui \

@@ -57,6 +57,8 @@
 #include <QScopedPointer>
 
 #include <QMainWindow>
+#include "videocliper.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Camera; }
@@ -127,6 +129,11 @@ private:
     QString m_videoContainerFormat;
     bool m_isCapturingImage = false;
     bool m_applicationExiting = false;
+
+    VideoCliper *m_videocliper;
+    QGraphicsScene *m_scene;
+    QGraphicsPixmapItem *m_canvas;
+
 };
 
 #endif

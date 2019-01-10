@@ -63,6 +63,10 @@
 #include <QPalette>
 
 #include <QtWidgets>
+#include <QDebug>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
 
 Q_DECLARE_METATYPE(QCameraInfo)
 
@@ -88,6 +92,17 @@ Camera::Camera() : ui(new Ui::Camera)
     connect(videoDevicesGroup, &QActionGroup::triggered, this, &Camera::updateCameraDevice);
     connect(ui->captureWidget, &QTabWidget::currentChanged, this, &Camera::updateCaptureMode);
 
+    // 初始化工具
+    this->m_videocliper = new VideoCliper(this);
+    this->m_scene = new QGraphicsScene();
+    ui->graphicsView->setScene(this->m_scene);
+    this->m_canvas = new QGraphicsPixmapItem();
+    this->m_scene->addItem(this->m_canvas);
+    this->m_videocliper->setCanvas(this->m_canvas);
+
+//    QImage test("D:/ai.jpg");
+//    this->m_canvas->setPixmap(QPixmap::fromImage(test));
+
     setCamera(QCameraInfo::defaultCamera());
 }
 
@@ -111,7 +126,8 @@ void Camera::setCamera(const QCameraInfo &cameraInfo)
 
     connect(ui->exposureCompensation, &QAbstractSlider::valueChanged, this, &Camera::setExposureCompensation);
 
-    m_camera->setViewfinder(ui->viewfinder);
+//    m_camera->setViewfinder(ui->viewfinder);
+    m_camera->setViewfinder(this->m_videocliper);   // Set the viewfinder
 
     updateCameraState(m_camera->state());
     updateLockStatus(m_camera->lockStatus(), QCamera::UserRequest);
@@ -183,9 +199,10 @@ void Camera::updateRecordTime()
 void Camera::processCapturedImage(int requestId, const QImage& img)
 {
     Q_UNUSED(requestId);
-    QImage scaledImage = img.scaled(ui->viewfinder->size(),
-                                    Qt::KeepAspectRatio,
-                                    Qt::SmoothTransformation);
+//    QImage scaledImage = img.scaled(ui->viewfinder->size(),
+//                                    Qt::KeepAspectRatio,
+//                                    Qt::SmoothTransformation);
+    QImage scaledImage = QImage(img);
 
     ui->lastImagePreviewLabel->setPixmap(QPixmap::fromImage(scaledImage));
 
