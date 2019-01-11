@@ -18,15 +18,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-DESTDIR = ../bin       # 生成的文件所在的目录
-MOC_DIR = ./moc        # Q_OBJECT转换后的类
-RCC_DIR = ./rcc        # .qrc文件转换后的位置
-OBJECTS_DIR = ./tmp    # 编译中间文件的位置
-UI_DIR = ./ui          # ui_xxx 文件存放位置
+DESTDIR = ../bin            # 生成的文件所在的目录
+MOC_DIR = ./moc             # Q_OBJECT转换后的类
+RCC_DIR = ./rcc             # .qrc文件转换后的位置
+OBJECTS_DIR = ./tmp         # 编译中间文件的位置
+UI_DIR = ./ui               # ui_xxx 文件存放位置
 
 include(../libs.pri)        # opencv 等设置
 
-INCLUDEPATH += $$PWD   # 将自身加入include路径
+INCLUDEPATH += $$PWD \      # 将自身加入include路径
+    $$PWD/../qtcsv/include  # qtcsv
 
 HEADERS = \
     camera.h \
