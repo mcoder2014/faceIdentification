@@ -58,6 +58,7 @@
 
 #include <QMainWindow>
 #include "videocliper.h"
+#include "facerecognizer.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -131,6 +132,7 @@ private:
     bool m_applicationExiting = false;
 
     VideoCliper *m_videocliper;
+    faceRecognizer *m_facerecognizer;
     QGraphicsScene *m_scene;
     QGraphicsPixmapItem *m_canvas;
 

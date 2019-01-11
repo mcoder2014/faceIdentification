@@ -12,7 +12,8 @@
 #include <dlib/image_processing/frontal_face_detector.h>
 
 #include <opencv2/core.hpp>
-#include <opencv2/flann.hpp>
+//#include <opencv2/flann.hpp>
+#include <flann/flann.hpp>
 
 #include "models/userinfo.h"
 
@@ -83,6 +84,8 @@ private:
     anet_type *m_net;                               // 人脸特征提取网络，化特征为 128 维特征向量
 
     QVector<UserInfo> m_userinfos;                  // 用户信息
+    QVector<matrix<float,0,1>> m_userfeatures;      // 测量出的用户特征
+    ::flann::Index<::flann::L2<float>> *m_flann_userinfos;   // 快速查找用户
 
     void init();                                    // 初始化
 };

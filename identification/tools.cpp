@@ -123,9 +123,9 @@ dlib::array2d<dlib::rgb_pixel> *toArray2d(const QPixmap &pixmap)
         {
             dlib::rgb_pixel pixel;
             QRgb color = image.pixel(x, y);
-            pixel.red = qRed(color);
-            pixel.blue = qBlue(color);
-            pixel.green = qGreen(color);
+            pixel.red = (uchar)qRed(color);
+            pixel.blue = (uchar)qBlue(color);
+            pixel.green = (uchar)qGreen(color);
 
             (*array_image)[y][x] = pixel;
         }
@@ -153,9 +153,9 @@ dlib::array2d<dlib::rgb_pixel> *toArray2d(const QImage &image)
         {
             dlib::rgb_pixel pixel;
             QRgb color = image.pixel(x, y);
-            pixel.red = qRed(color);
-            pixel.blue = qBlue(color);
-            pixel.green = qGreen(color);
+            pixel.red = (uchar)qRed(color);
+            pixel.blue = (uchar)qBlue(color);
+            pixel.green = (uchar)qGreen(color);
 
             (*array_image)[y][x] = pixel;
         }

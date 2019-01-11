@@ -92,7 +92,7 @@ Camera::Camera() : ui(new Ui::Camera)
     connect(videoDevicesGroup, &QActionGroup::triggered, this, &Camera::updateCameraDevice);
     connect(ui->captureWidget, &QTabWidget::currentChanged, this, &Camera::updateCaptureMode);
 
-    // 初始化工具
+    // 初始化视频画布
     this->m_videocliper = new VideoCliper(this);
     this->m_scene = new QGraphicsScene();
     ui->graphicsView->setScene(this->m_scene);
@@ -100,8 +100,9 @@ Camera::Camera() : ui(new Ui::Camera)
     this->m_scene->addItem(this->m_canvas);
     this->m_videocliper->setCanvas(this->m_canvas);
 
-//    QImage test("D:/ai.jpg");
-//    this->m_canvas->setPixmap(QPixmap::fromImage(test));
+    // 初始化人脸识别工具
+    this->m_facerecognizer = new faceRecognizer();
+    this->m_facerecognizer->setFaceDatabase("./database/namelist.csv");
 
     setCamera(QCameraInfo::defaultCamera());
 }

@@ -3,9 +3,10 @@ message(libs.pri $$PWD)
 win32 {
     INCLUDEPATH += \
         E:\libs\opencv-3.4.5\mingw730_release\install\include \             # opencv 3.4.5
-        E:\libs\opencv-3.4.5\mingw730_release\install\include\opencv \
-        E:\libs\opencv-3.4.5\mingw730_release\install\include\opencv2 \
-        E:\libs\dlib\dlib-19.16-mingw730\install\include                     # dlib 19.17
+#        E:\libs\opencv-3.4.5\mingw730_release\install\include\opencv \
+#        E:\libs\opencv-3.4.5\mingw730_release\install\include\opencv2 \
+        E:\libs\dlib\dlib-19.16-mingw730\install\include \                  # dlib 19.17
+        E:\libs\flann\flann_1.9.1_mingw730_release\install\include          # flann 1.91
 
     CONFIG(debug, debug|release) {
         message("I compiled the opencv 3.4.5 debug mode FAILED! USING REALSE MODE")
@@ -32,7 +33,8 @@ win32 {
             $$PWD/../../libs/opencv-3.4.5/mingw730_release/install/x64/mingw/lib/libopencv_superres345.dll.a \
             $$PWD/../../libs/opencv-3.4.5/mingw730_release/install/x64/mingw/lib/libopencv_video345.dll.a \
             $$PWD/../../libs/opencv-3.4.5/mingw730_release/install/x64/mingw/lib/libopencv_videoio345.dll.a \
-            $$PWD/../../libs/opencv-3.4.5/mingw730_release/install/x64/mingw/lib/libopencv_videostab345.dll.a
+            $$PWD/../../libs/opencv-3.4.5/mingw730_release/install/x64/mingw/lib/libopencv_videostab345.dll.a \
+            -L E:\libs\flann\flann_1.9.1_mingw730_release\install\lib -lflann -lflann_cpp                      # flann
 
     }
 }
