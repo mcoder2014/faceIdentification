@@ -29,18 +29,27 @@ include(../libs.pri)        # opencv 等设置
 INCLUDEPATH += $$PWD \      # 将自身加入include路径
     $$PWD/../qtcsv/include  # qtcsv
 
+LIBS += \
+    -L$$OUT_PWD/../bin -lqtcsv
+
 HEADERS = \
     camera.h \
     imagesettings.h \
     videosettings.h \
-    videocliper.h
+    videocliper.h \
+    facerecognizer.h \
+    tools.h \
+    models/userinfo.h
 
 SOURCES = \
     main.cpp \
     camera.cpp \
     imagesettings.cpp \
     videosettings.cpp \
-    videocliper.cpp
+    videocliper.cpp \
+    facerecognizer.cpp \
+    tools.cpp \
+    models/userinfo.cpp
 
 FORMS += \
     camera.ui \
@@ -49,5 +58,4 @@ FORMS += \
 
 RESOURCES += camera.qrc
 
-
-
+RC_FILE = set_icon.rc       # 设置

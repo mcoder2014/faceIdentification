@@ -5,7 +5,8 @@ win32 {
         E:\libs\opencv-3.4.5\mingw730_release\install\include \             # opencv 3.4.5
         E:\libs\opencv-3.4.5\mingw730_release\install\include\opencv \
         E:\libs\opencv-3.4.5\mingw730_release\install\include\opencv2 \
-        E:\libs\dlib\dlib-19.16-mingw730\install\include \                    # dlib 19.17
+        E:\libs\dlib\dlib-19.16-mingw730\install\include                     # dlib 19.17
+
     CONFIG(debug, debug|release) {
         message("I compiled the opencv 3.4.5 debug mode FAILED! USING REALSE MODE")
     }

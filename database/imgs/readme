@@ -1,0 +1,3 @@
+The database for face identification.
+If you put your head photo at this floder and add one record in namelist.csv.
+The face identification application will recognitize you at the application.
