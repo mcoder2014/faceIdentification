@@ -6,6 +6,8 @@
 #include <QGraphicsPixmapItem>
 #include <QTime>
 
+#include "models/userinfo.h"
+
 class VideoCliper : public QAbstractVideoSurface
 {
     Q_OBJECT
@@ -24,7 +26,6 @@ public:
 signals:
     void frameAvailable(QImage frame);      // everyFrame
 
-public slots:
 
 private:
     QGraphicsPixmapItem *m_canvas;          // The canvas to put Frame

@@ -55,11 +55,14 @@
 #include <QCameraImageCapture>
 #include <QMediaRecorder>
 #include <QScopedPointer>
-
+#include <QThread>
 #include <QMainWindow>
+#include <QGraphicsRectItem>
+#include <QGraphicsSimpleTextItem>
+
 #include "videocliper.h"
 #include "facerecognizer.h"
-#include <QThread>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Camera; }
@@ -113,6 +116,8 @@ private slots:
     void readyForCapture(bool ready);
     void imageSaved(int id, const QString &fileName);
 
+    void drawRecongnitionResult(QVector<QRectF> rects, QVector<UserInfo> userinfos);    // 绘制结果
+
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
@@ -137,7 +142,12 @@ private:
     QGraphicsScene *m_scene;
     QGraphicsPixmapItem *m_canvas;
 
-    QThread m_thread;
+    QThread m_thread;           // 人脸识别线程
+    int m_numMarkUser;          // 标记用户数量
+    QVector<QGraphicsRectItem*> m_graphicsRects;         // 用来标记人脸位置的方框
+    QVector<QGraphicsSimpleTextItem*> m_graphicsTexts;   // 用来标记人脸信息的文字
+
+    void initGraphicsItems();     // 初始化标记组件
 };
 
 #endif

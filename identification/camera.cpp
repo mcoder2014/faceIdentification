@@ -67,6 +67,9 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QFont>
+#include <QColor>
+#include <QBrush>
 #include <QApplication>
 
 Q_DECLARE_METATYPE(QCameraInfo)
@@ -110,16 +113,23 @@ Camera::Camera() : ui(new Ui::Camera)
 
     this->m_facerecognizer->moveToThread(&this->m_thread);
 
-    // 连接信号处理
+    // 连接信号处理-连接画布和人脸识别组件
     connect(this->m_videocliper, SIGNAL(frameAvailable(QImage)),
             this->m_facerecognizer, SLOT(faceRecognition(QImage)));
+
+    // 初始化人脸标记组件
+    this->m_numMarkUser = 10;   // 最大同时标注10名用户
+    this->initGraphicsItems();  // 初始化
 
     setCamera(QCameraInfo::defaultCamera());
 }
 
 Camera::~Camera()
 {
+//    this->m_facerecognizer->moveToThread(QApplication::instance()->thread());
     this->m_thread.quit();
+    this->m_thread.wait();
+//    this->m_thread.exit(0);
 }
 
 void Camera::setCamera(const QCameraInfo &cameraInfo)
@@ -453,6 +463,50 @@ void Camera::imageSaved(int id, const QString &fileName)
         close();
 }
 
+///
+/// \brief Camera::drawRecongnitionResult
+/// 在画布上标记识别出的用户的信息
+/// 用普通颜色标记有备案的用户
+/// 用 warning 颜色标识未知用户
+/// \param rects
+/// \param userinfos
+///
+void Camera::drawRecongnitionResult(QVector<QRectF> rects, QVector<UserInfo> userinfos)
+{
+//    qDebug() << "draw recongnition result!";
+
+    // 为了限制，做了一个最大的数量
+    int size = this->m_numMarkUser>rects.size()?rects.size():this->m_numMarkUser;
+
+    for(int i = 0; i < size; i++)
+    {
+        // 处理标记
+
+        // 画框
+        QGraphicsRectItem *graphicsRect = this->m_graphicsRects[i];
+        graphicsRect->setRect(rects[i]);
+        graphicsRect->setVisible(true);      // 设置可见
+
+
+        // 标记文字
+        QGraphicsSimpleTextItem *simpleText = this->m_graphicsTexts[i];
+        simpleText->setText(userinfos[i].toString());
+        simpleText->setPos(rects[i].left(),rects[i].bottom());
+        simpleText->setVisible(true);
+    }
+
+    for(int i = size; i < this->m_numMarkUser; i++)
+    {
+        // 将多余的组件隐藏
+        QGraphicsRectItem *graphicsRect = this->m_graphicsRects[i];
+        graphicsRect->setVisible(false);
+
+        QGraphicsSimpleTextItem *simpleText = this->m_graphicsTexts[i];
+        simpleText->setVisible(false);
+    }
+
+}
+
 void Camera::closeEvent(QCloseEvent *event)
 {
     if (m_isCapturingImage) {
@@ -462,4 +516,38 @@ void Camera::closeEvent(QCloseEvent *event)
     } else {
         event->accept();
     }
+}
+
+///
+/// \brief Camera::initGraphicsItems
+/// 初始化人脸标注用的方框和文字
+///
+void Camera::initGraphicsItems()
+{
+    qDebug() << "Init graphics Items";
+
+    for(int i = 0; i < this->m_numMarkUser; i++)
+    {
+        QGraphicsRectItem *graphicsRect = new QGraphicsRectItem();
+        this->m_scene->addItem(graphicsRect);
+        graphicsRect->setZValue(500);
+        graphicsRect->setVisible(true);
+        this->m_graphicsRects.push_back(graphicsRect);
+
+        QGraphicsSimpleTextItem *simpleText = new QGraphicsSimpleTextItem();
+        this->m_scene->addItem(simpleText);
+        simpleText->setZValue(600);
+        simpleText->setVisible(true);
+        this->m_graphicsTexts.push_back(simpleText);
+
+    }
+
+    // 建立连接
+//    Q_DECLARE_METATYPE(QVector<QRectF>);
+//    Q_DECLARE_METATYPE(QVector<UserInfo>);
+    int metatype_id_rect = qRegisterMetaType<QVector<QRectF>>("QVector<QRectF>");
+    int metatype_id_userinfo = qRegisterMetaType<QVector<UserInfo>>("QVector<UserInfo>");
+
+    connect(this->m_facerecognizer, SIGNAL(recongnitionResult(QVector<QRectF>, QVector<UserInfo>)),
+            this, SLOT(drawRecongnitionResult(QVector<QRectF>, QVector<UserInfo>)));
 }

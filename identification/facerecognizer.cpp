@@ -156,6 +156,12 @@ void faceRecognizer::faceRecognition(QImage image)
     if(dets.size() == 0)
     {
         qDebug() << "Detected faces: 0";
+
+        //  即便如此也需要返回空结果
+        QVector<QRectF> face_region;
+        QVector<UserInfo> face_info;
+        emit recongnitionResult(face_region, face_info);
+
         return;
     }
 
@@ -236,6 +242,8 @@ void faceRecognizer::faceRecognition(QImage image)
             face_info.push_back(userinfo);
         }
     }
+
+    emit recongnitionResult(face_region, face_info);
 
     qDebug() << "Detected faces: " << dets.size()
              << "Cost time: " << this->m_time.elapsed()/1000.0 << "S";
