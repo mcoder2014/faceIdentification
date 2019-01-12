@@ -12,6 +12,7 @@ VideoCliper::VideoCliper(QObject *parent) : QAbstractVideoSurface(parent)
 {
     // init
     this->m_canvas = nullptr;       // initialize as null pointer
+    this->m_counter = 0;            // 计数器置零
 }
 
 ///
@@ -113,7 +114,15 @@ bool VideoCliper::present(const QVideoFrame &frame)
         // 判断是由于共享内存区域，导致内存被释放
         QImage deepCopy = image.copy();
         m_canvas->setPixmap(QPixmap::fromImage(deepCopy));  // update canvas
-        emit frameAvailable(deepCopy);
+
+        this->m_counter ++;
+        if(this->m_counter / 10 ==0)
+        {
+            // 降低发送帧的频率，减少卡顿
+            this->m_counter = 0;    // 计数器置零
+            emit frameAvailable(deepCopy);
+        }
+        // emit frameAvailable(deepCopy);
 
         cloneFrame.unmap();
 //        qDebug() << "present finished!";

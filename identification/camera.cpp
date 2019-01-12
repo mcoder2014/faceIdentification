@@ -104,6 +104,10 @@ Camera::Camera() : ui(new Ui::Camera)
     this->m_facerecognizer = new faceRecognizer();
     this->m_facerecognizer->setFaceDatabase("./database/namelist.csv");
 
+    // 连接信号处理
+    connect(this->m_videocliper, SIGNAL(frameAvailable(QImage)),
+            this->m_facerecognizer, SLOT(faceRecognition(QImage)));
+
     setCamera(QCameraInfo::defaultCamera());
 }
 
@@ -127,6 +131,7 @@ void Camera::setCamera(const QCameraInfo &cameraInfo)
 
     connect(ui->exposureCompensation, &QAbstractSlider::valueChanged, this, &Camera::setExposureCompensation);
 
+    // 将画面显示在自定义板块上
 //    m_camera->setViewfinder(ui->viewfinder);
     m_camera->setViewfinder(this->m_videocliper);   // Set the viewfinder
 

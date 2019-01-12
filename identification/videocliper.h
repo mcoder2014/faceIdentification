@@ -24,6 +24,7 @@ public slots:
 
 private:
     QGraphicsPixmapItem *m_canvas;          // The canvas to put Frame
+    int m_counter;                          // 计数器
 
 };
 

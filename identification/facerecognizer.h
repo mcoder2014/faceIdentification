@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QVector>
 #include <QImage>
+#include <QRectF>
+#include <QTime>
 
 #include <dlib/dnn.h>
 //#include <dlib/clustering.h>
@@ -72,8 +74,12 @@ public:
     explicit faceRecognizer(QObject *parent = nullptr);
     void setFaceDatabase(QString filepath);         // 设置人脸数据库
 
+    float threshold() const;
+    void setThreshold(float threshold);
+
 signals:
     // 发送人脸识别结果的信号
+    void recongnitionResult(QVector<QRectF> rects, QVector<UserInfo> userinfos);
 
 public slots:
     void faceRecognition(QImage image);             // 识别人脸
@@ -82,10 +88,12 @@ private:
     frontal_face_detector m_face_detector;         // 人脸检测
     shape_predictor *m_landmark_sp;                 // 人脸特征点
     anet_type *m_net;                               // 人脸特征提取网络，化特征为 128 维特征向量
+    float m_threshold;                              // 判定是否为同一用户的阈值
 
     QVector<UserInfo> m_userinfos;                  // 用户信息
     QVector<matrix<float,0,1>> m_userfeatures;      // 测量出的用户特征
     ::flann::Index<::flann::L2<float>> *m_flann_userinfos;   // 快速查找用户
+    QTime m_time;                                   // 计时器，用来测量人脸识别花费时间
 
     void init();                                    // 初始化
 };
