@@ -97,6 +97,15 @@ QString UserInfo::toString()
     return str_list.join(",");
 }
 
+QString UserInfo::toSimpleString()
+{
+    QStringList str_list;
+    str_list << "Index: " + QString().setNum(m_index)
+             << "Name: " + m_name
+             << "UserId: " + m_userId;
+    return str_list.join(",");
+}
+
 UserInfo& UserInfo::operator=(const UserInfo &userinfo)
 {
 

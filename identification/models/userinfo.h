@@ -25,8 +25,9 @@ public:
     bool isUnknown() const;
     void setIsUnknown(bool isUnknown);
 
-    void setUnknownUser();   // 将UserInfo设置为未知用户信息
-    QString toString();     // 方便输出测试结果
+    void setUnknownUser();      // 将UserInfo设置为未知用户信息
+    QString toString();         // 方便输出测试结果
+    QString toSimpleString();   // 输出在屏幕上显示的
     UserInfo& operator= (const UserInfo &userinfo);
 
 private:

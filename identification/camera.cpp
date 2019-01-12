@@ -70,6 +70,7 @@
 #include <QFont>
 #include <QColor>
 #include <QBrush>
+#include <QPen>
 #include <QApplication>
 
 Q_DECLARE_METATYPE(QCameraInfo)
@@ -478,6 +479,10 @@ void Camera::drawRecongnitionResult(QVector<QRectF> rects, QVector<UserInfo> use
     // 为了限制，做了一个最大的数量
     int size = this->m_numMarkUser>rects.size()?rects.size():this->m_numMarkUser;
 
+    // 设置不同的标记颜色
+    QColor rect_safe(0,255,0);
+    QColor warning(255,0,0);
+
     for(int i = 0; i < size; i++)
     {
         // 处理标记
@@ -485,14 +490,35 @@ void Camera::drawRecongnitionResult(QVector<QRectF> rects, QVector<UserInfo> use
         // 画框
         QGraphicsRectItem *graphicsRect = this->m_graphicsRects[i];
         graphicsRect->setRect(rects[i]);
-        graphicsRect->setVisible(true);      // 设置可见
 
 
         // 标记文字
         QGraphicsSimpleTextItem *simpleText = this->m_graphicsTexts[i];
-        simpleText->setText(userinfos[i].toString());
+        simpleText->setText(userinfos[i].toSimpleString());
         simpleText->setPos(rects[i].left(),rects[i].bottom());
+
+
+        // 设置颜色
+        if(userinfos[i].isUnknown())
+        {
+            // warning
+            QPen rectPen = graphicsRect->pen();
+            rectPen.setColor(warning);
+            graphicsRect->setPen(rectPen);
+
+        }
+        else
+        {
+            // safe
+            QPen rectPen = graphicsRect->pen();
+            rectPen.setColor(rect_safe);
+            graphicsRect->setPen(rectPen);
+
+        }
+
+        graphicsRect->setVisible(true);      // 设置可见
         simpleText->setVisible(true);
+
     }
 
     for(int i = size; i < this->m_numMarkUser; i++)
@@ -532,19 +558,28 @@ void Camera::initGraphicsItems()
         this->m_scene->addItem(graphicsRect);
         graphicsRect->setZValue(500);
         graphicsRect->setVisible(true);
+        QPen rectPen = graphicsRect->pen();
+
+        // 设置样式
+        rectPen.setWidth(3);
+        graphicsRect->setPen(rectPen);
+
         this->m_graphicsRects.push_back(graphicsRect);
 
         QGraphicsSimpleTextItem *simpleText = new QGraphicsSimpleTextItem();
         this->m_scene->addItem(simpleText);
         simpleText->setZValue(600);
         simpleText->setVisible(true);
+
+        QFont font = simpleText->font();
+        font.setPointSize(20);
+        simpleText->setFont(font);
+
         this->m_graphicsTexts.push_back(simpleText);
 
     }
 
     // 建立连接
-//    Q_DECLARE_METATYPE(QVector<QRectF>);
-//    Q_DECLARE_METATYPE(QVector<UserInfo>);
     int metatype_id_rect = qRegisterMetaType<QVector<QRectF>>("QVector<QRectF>");
     int metatype_id_userinfo = qRegisterMetaType<QVector<UserInfo>>("QVector<UserInfo>");
 

@@ -184,50 +184,61 @@ void faceRecognizer::faceRecognition(QImage image)
 
     // 可以一口气查询多个 首先构建查询矩阵
     int num_user = face_des.size();     // 识别到的人数
-    float *tmp_data = new float[num_user * 128];
-    for(int i = 0; i < num_user; i++)
-    {
-        matrix<float,0,1> tmp_feature = face_des[i];
-        for(int j = 0; j < 128; j++)
-        {
-            tmp_data[128 * i + j] = tmp_feature(j);
-        }
-    }
+//    float *tmp_data = new float[num_user * 128];
+//    for(int i = 0; i < num_user; i++)
+//    {
+//        matrix<float,0,1> tmp_feature = face_des[i];
+//        for(int j = 0; j < 128; j++)
+//        {
+//            tmp_data[128 * i + j] = tmp_feature(j);
+//        }
+//    }
 
-    ::flann::Matrix<float> queries(tmp_data,(size_t)num_user, 128, 128);   // 查询矩阵
-    std::vector<std::vector<size_t>> indices;                // 储存查询结果
-    std::vector< std::vector<float>> dists;    // 储存距离结果
-    int nn = 1;     // 只查找最近的点
+//    ::flann::Matrix<float> queries(tmp_data,(size_t)num_user, 128, 128);   // 查询矩阵
+//    std::vector<std::vector<size_t>> indices;                // 储存查询结果
+//    std::vector< std::vector<float>> dists;    // 储存距离结果
+//    int nn = 1;     // 只查找最近的点
 
-    /**
-    int knnSearch(const Matrix<ElementType>& queries,
-                                 std::vector< std::vector<size_t> >& indices,
-                                 std::vector<std::vector<DistanceType> >& dists,
-                                 size_t knn,
-                           const SearchParams& params) const
-      */
+//    ::flann::SearchParams searchparams;
 
-    ::flann::SearchParams searchparams;
-
-    m_flann_userinfos->knnSearch(queries, indices, dists, (size_t)nn, searchparams);    // 查找最近的 k 个邻域点
+//    m_flann_userinfos->knnSearch(queries, indices, dists, (size_t)nn, searchparams);    // 查找最近的 k 个邻域点
 
     // 设置 人脸区域
     QVector<QRectF> face_region;
     QVector<UserInfo> face_info;
-    for(int i=0;i<dets.size(); i++)
+    for(int i=0;i<num_user; i++)
     {
         QRectF rect(dets[i].left(),dets[i].top(), dets[i].width(),dets[i].height());
         face_region.push_back(rect);
     }
 
-    for(int i = 0; i < dists.size(); i++)
+    for(int i = 0; i < num_user; i++)
     {
-        float distance = (dists[i])[0];
+        //---貌似一起检查最近点会出bug，分开检查测试
+        float *tmp_data = new float[128];
+        matrix<float,0,1> tmp_feature = face_des[i];
+        for(int iter = 0; iter < 128; iter++)
+        {
+            tmp_data[iter] = tmp_feature(iter);
+        }
+
+        ::flann::Matrix<float> queries(tmp_data,1, 128, 128);   // 查询矩阵
+        std::vector<std::vector<size_t>> indices;                // 储存查询结果
+        std::vector< std::vector<float>> dists;    // 储存距离结果
+        int nn = 1;     // 只查找最近的点
+
+        ::flann::SearchParams searchparams;
+
+        m_flann_userinfos->knnSearch(queries, indices, dists, (size_t)nn, searchparams);    // 查找最近的 k 个邻域点
+
+        //-----
+        UserInfo userinfo;
+        float distance = (dists[0])[0];
         if(distance < this->m_threshold)
         {
             // 记录中有该用户
-            int userIndex = (int)(indices[i])[0];
-            UserInfo userinfo = this->m_userinfos[userIndex];
+            int userIndex = (int)(indices[0])[0];
+            userinfo = this->m_userinfos[userIndex];
             face_info.push_back(userinfo);
 //            qDebug() << i <<": " << userinfo.name()
 //                     << " userIndex: "<< userIndex;
@@ -237,21 +248,26 @@ void faceRecognizer::faceRecognition(QImage image)
             // 记录中无该用户
 
 //            qDebug() << i << ": 未知";
-            UserInfo userinfo;
             userinfo.setUnknownUser();
             face_info.push_back(userinfo);
         }
+        qDebug() << i << " " <<userinfo.toString()
+                 << " Distance: " << distance;
     }
+
+
+
+
 
     emit recongnitionResult(face_region, face_info);
 
-    qDebug() << "Detected faces: " << dets.size()
+    qDebug() << "Up Detected faces: " << dets.size()
              << "Cost time: " << this->m_time.elapsed()/1000.0 << "S";
-    for(int i = 0 ; i <face_info.size(); i++)
-    {
-        qDebug() << i << " " << face_info[i].toString()
-                 << "Distance: " << (dists[i])[0];
-    }
+//    for(int i = 0 ; i <face_info.size(); i++)
+//    {
+//        qDebug() << i << " " << face_info[i].toString()
+//                 << "Distance: " << (dists[i])[0];
+//    }
 
 }
 
