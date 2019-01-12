@@ -59,7 +59,7 @@
 #include <QMainWindow>
 #include "videocliper.h"
 #include "facerecognizer.h"
-
+#include <QThread>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Camera; }
@@ -71,6 +71,7 @@ class Camera : public QMainWindow
 
 public:
     Camera();
+    ~Camera() override;
 
 private slots:
     void setCamera(const QCameraInfo &cameraInfo);
@@ -136,6 +137,7 @@ private:
     QGraphicsScene *m_scene;
     QGraphicsPixmapItem *m_canvas;
 
+    QThread m_thread;
 };
 
 #endif

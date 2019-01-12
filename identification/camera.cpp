@@ -67,6 +67,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QApplication>
 
 Q_DECLARE_METATYPE(QCameraInfo)
 
@@ -100,15 +101,25 @@ Camera::Camera() : ui(new Ui::Camera)
     this->m_scene->addItem(this->m_canvas);
     this->m_videocliper->setCanvas(this->m_canvas);
 
+    // 多线程
+    this->m_thread.start();
+
     // 初始化人脸识别工具
     this->m_facerecognizer = new faceRecognizer();
     this->m_facerecognizer->setFaceDatabase("./database/namelist.csv");
+
+    this->m_facerecognizer->moveToThread(&this->m_thread);
 
     // 连接信号处理
     connect(this->m_videocliper, SIGNAL(frameAvailable(QImage)),
             this->m_facerecognizer, SLOT(faceRecognition(QImage)));
 
     setCamera(QCameraInfo::defaultCamera());
+}
+
+Camera::~Camera()
+{
+    this->m_thread.quit();
 }
 
 void Camera::setCamera(const QCameraInfo &cameraInfo)

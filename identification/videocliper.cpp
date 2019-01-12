@@ -12,7 +12,8 @@ VideoCliper::VideoCliper(QObject *parent) : QAbstractVideoSurface(parent)
 {
     // init
     this->m_canvas = nullptr;       // initialize as null pointer
-    this->m_counter = 0;            // 计数器置零
+    this->m_time.start();           // 打开计时器
+    this->m_frameInterval = 500;
 }
 
 ///
@@ -114,12 +115,10 @@ bool VideoCliper::present(const QVideoFrame &frame)
         // 判断是由于共享内存区域，导致内存被释放
         QImage deepCopy = image.copy();
         m_canvas->setPixmap(QPixmap::fromImage(deepCopy));  // update canvas
-
-        this->m_counter ++;
-        if(this->m_counter / 10 ==0)
+        if(this->m_time.elapsed() > this->m_frameInterval)
         {
-            // 降低发送帧的频率，减少卡顿
-            this->m_counter = 0;    // 计数器置零
+            // 每 m_frameInterval 时间间隔发一次帧数据
+            this->m_time.restart();
             emit frameAvailable(deepCopy);
         }
         // emit frameAvailable(deepCopy);
@@ -142,4 +141,14 @@ QGraphicsPixmapItem *VideoCliper::canvas() const
 void VideoCliper::setCanvas(QGraphicsPixmapItem *canvas)
 {
     m_canvas = canvas;
+}
+
+int VideoCliper::frameInterval() const
+{
+    return m_frameInterval;
+}
+
+void VideoCliper::setFrameInterval(int frameInterval)
+{
+    m_frameInterval = frameInterval;
 }
