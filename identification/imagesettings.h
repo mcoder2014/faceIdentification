@@ -75,6 +75,12 @@ public:
     QImageEncoderSettings imageSettings() const;
     void setImageSettings(const QImageEncoderSettings &settings);
 
+    int detectInterval() const;
+    void setDetectInterval(const int interval);
+
+    float threshold() const;
+    void setThreshold(const float threshold);
+
     QString format() const;
     void setFormat(const QString &format);
 

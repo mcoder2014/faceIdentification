@@ -255,10 +255,6 @@ void faceRecognizer::faceRecognition(QImage image)
                  << " Distance: " << distance;
     }
 
-
-
-
-
     emit recongnitionResult(face_region, face_info);
 
     qDebug() << "Up Detected faces: " << dets.size()

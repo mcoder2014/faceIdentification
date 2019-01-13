@@ -116,6 +116,26 @@ void ImageSettings::setImageSettings(const QImageEncoderSettings &imageSettings)
     ui->imageQualitySlider->setValue(imageSettings.quality());
 }
 
+int ImageSettings::detectInterval() const
+{
+    return ui->detectInterval->value();
+}
+
+void ImageSettings::setDetectInterval(const int interval)
+{
+    ui->detectInterval->setValue(interval);
+}
+
+float ImageSettings::threshold() const
+{
+    return (float)ui->threshold->value();
+}
+
+void ImageSettings::setThreshold(const float threshold)
+{
+    ui->threshold->setValue(threshold);
+}
+
 QVariant ImageSettings::boxValue(const QComboBox *box) const
 {
     int idx = box->currentIndex();

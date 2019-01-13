@@ -281,9 +281,17 @@ void Camera::configureImageSettings()
 
     settingsDialog.setImageSettings(m_imageSettings);
 
+    // 设置检测频率和阈值
+    settingsDialog.setDetectInterval(this->m_videocliper->frameInterval());
+    settingsDialog.setThreshold(this->m_facerecognizer->threshold());
+
     if (settingsDialog.exec()) {
         m_imageSettings = settingsDialog.imageSettings();
         m_imageCapture->setEncodingSettings(m_imageSettings);
+
+        // 设置检测频率和人脸检测阈值
+        this->m_videocliper->setFrameInterval(settingsDialog.detectInterval());
+        this->m_facerecognizer->setThreshold(settingsDialog.threshold());
     }
 }
 
