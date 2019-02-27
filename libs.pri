@@ -16,7 +16,8 @@ win32 {
         message(RELEASE MODE)
 
         LIBS += \
-            -LE:\libs\dlib\dlib-19.16-mingw730\install\lib -ldlib \   # dlib 19.17
+#            -LE:\libs\dlib\dlib-19.16-mingw730\install\lib -ldlib \   # dlib 19.17
+            -LE:\libs\dlib\dlib-19.16-mingw730_debug\install\lib -ldlib \
             $$PWD/../../libs/opencv-3.4.5/mingw730_release/install/x64/mingw/lib/libopencv_calib3d345.dll.a \   # opencv3.4.5
             $$PWD/../../libs/opencv-3.4.5/mingw730_release/install/x64/mingw/lib/libopencv_core345.dll.a \
             $$PWD/../../libs/opencv-3.4.5/mingw730_release/install/x64/mingw/lib/libopencv_dnn345.dll.a \

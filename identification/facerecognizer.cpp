@@ -125,7 +125,6 @@ void faceRecognizer::setFaceDatabase(QString filepath)
     ::flann::Matrix<float> *feature = new ::flann::Matrix<float>(
                 tmp_data,
                 this->m_userfeatures.size(),
-                128,
                 128);
 
     this->m_flann_userinfos->buildIndex( *feature );
@@ -217,20 +216,23 @@ void faceRecognizer::faceRecognition(QImage image)
         //---貌似一起检查最近点会出bug，分开检查测试
         float *tmp_data = new float[128];
         matrix<float,0,1> tmp_feature = face_des[i];
+
         for(int iter = 0; iter < 128; iter++)
         {
             tmp_data[iter] = tmp_feature(iter);
         }
 
-        ::flann::Matrix<float> queries(tmp_data,1, 128, 128);   // 查询矩阵
-        std::vector<std::vector<size_t>> indices;                // 储存查询结果
-        std::vector< std::vector<float>> dists;    // 储存距离结果
-        int nn = 1;     // 只查找最近的点
+        ::flann::Matrix<float> queries(tmp_data, 1, 128);   // 查询矩阵
+        std::vector<std::vector<size_t>> indices;           // 储存查询结果
+        std::vector< std::vector<float>> dists;             // 储存距离结果
+        int nn = 3;                                         // 只查找最近的点
 
-        ::flann::SearchParams searchparams;
+        ::flann::SearchParams searchparams(128);
 
         m_flann_userinfos->knnSearch(queries, indices, dists, (size_t)nn, searchparams);    // 查找最近的 k 个邻域点
 
+        qDebug() << "Nearest: " << (int)(indices[0])[0] << " " << (dists[0])[0] << endl
+                << "Second Nearest: " << (int)(indices[0])[1] << " " << (dists[0])[1];
         //-----
         UserInfo userinfo;
         float distance = (dists[0])[0];
@@ -249,10 +251,13 @@ void faceRecognizer::faceRecognition(QImage image)
 
 //            qDebug() << i << ": 未知";
             userinfo.setUnknownUser();
+            userinfo.setIndex((int)(indices[0])[0]);
+            userinfo.setUserId(QString().setNum(distance));
             face_info.push_back(userinfo);
         }
         qDebug() << i << " " <<userinfo.toString()
-                 << " Distance: " << distance;
+                 << " Distance: " << distance
+                 << " Nearest: " << (indices[0])[0];
     }
 
     emit recongnitionResult(face_region, face_info);
@@ -299,5 +304,5 @@ void faceRecognizer::init()
                 ::flann::KDTreeIndexParams(4));
 
     // 初始化阈值
-    this->setThreshold(0.1);
+    this->setThreshold(0.2);
 }
